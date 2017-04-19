@@ -16,8 +16,8 @@ import scala.util.Properties
 
 /** Stores environment and performs command interpretation */
 class CommandLineInterpreter {
-  private var workDirectory = System.getProperty("user.dir")
   private val environment = mutable.Map[String, String]().withDefaultValue("")
+  private var workDirectory = System.getProperty("user.dir")
 
   /** Evaluate a pipeline of commands */
   def eval(composition: Composition, in: InputStream = System.in, out: OutputStream = System.out): Unit = {
