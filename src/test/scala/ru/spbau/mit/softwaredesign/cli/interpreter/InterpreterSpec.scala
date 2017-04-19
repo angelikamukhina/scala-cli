@@ -27,6 +27,12 @@ class InterpreterSpec extends FlatSpec {
     }
   }
 
+  def evalCommandLine(commandLine: String, cli: CommandLineInterpreter, sink: OutputStream): Unit = {
+    val parsedCommandLine = parseCommandLine(commandLine)
+    cli.eval(parsedCommandLine, System.in, sink)
+    sink.close()
+  }
+
   def parseCommandLine(commandLine: String): Composition = {
     CommandLineParsers.parse(commandLine) match {
       case CommandLineParsers.Success(pipeline, _) => pipeline
@@ -34,13 +40,7 @@ class InterpreterSpec extends FlatSpec {
     }
   }
 
-  def evalCommandLine(commandLine: String, cli: CommandLineInterpreter, sink: OutputStream): Unit = {
-    val parsedCommandLine = parseCommandLine(commandLine)
-    cli.eval(parsedCommandLine, System.in, sink)
-    sink.close()
-  }
-
-  def evalCdCommand(commandLine: String, cli: CommandLineInterpreter, sink: OutputStream) : Unit ={
+  def evalCdCommand(commandLine: String, cli: CommandLineInterpreter, sink: OutputStream): Unit = {
     val userDir = System.getProperty("user.dir")
     cli.eval(parseCommandLine("cd " + userDir), System.in, sink)
     val parsedCommandLine = parseCommandLine(commandLine)
@@ -49,7 +49,7 @@ class InterpreterSpec extends FlatSpec {
     sink.close()
   }
 
-  def evalLsCommand(commandLine : String, cli: CommandLineInterpreter, sink:OutputStream) : Unit ={
+  def evalLsCommand(commandLine: String, cli: CommandLineInterpreter, sink: OutputStream): Unit = {
     val testDirPath = URLDecoder.decode(getClass.getResource("/test_folder").getPath, "UTF-8")
     cli.eval(parseCommandLine("cd " + testDirPath), System.in, sink)
     cli.eval(parseCommandLine(commandLine), System.in, sink)
@@ -195,7 +195,7 @@ class InterpreterSpec extends FlatSpec {
       val commandLine = s"grep -A 1 3 $testFilePath"
       evalCommandLine(commandLine, cli, sink)
       val expected = s"3${Properties.lineSeparator}1${Properties.lineSeparator}" +
-                     s"3${Properties.lineSeparator}1${Properties.lineSeparator}"
+        s"3${Properties.lineSeparator}1${Properties.lineSeparator}"
       val actual = Source.fromInputStream(source).mkString
       assertResult(expected)(actual)
     }
